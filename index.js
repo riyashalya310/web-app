@@ -8,6 +8,8 @@ const dbPath = path.join(__dirname, "college.db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
+const cors = require('cors') //import the cors package
+app.use(cors())
 
 let db = null;
 
