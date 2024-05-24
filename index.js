@@ -135,7 +135,7 @@ const authenticateToken = (request, response, next) => {
 };
 
 app.get("/students-list", authenticateToken, async (reuqest, response) => {
-  const query = `SELECT * FROM students`;
+  const query = `SELECT student.id, subjects.name,SUM(marks.marks) FROM students INNER JOIN marks ON marks.student_id=students.id INNER JOIN subjects ON subjects.id=marks.subject_id`;
   const users = await db.all(query);
   if (users.length === 0) {
     response.status(401);
@@ -145,6 +145,19 @@ app.get("/students-list", authenticateToken, async (reuqest, response) => {
     response.send({ users });
   }
 });
+
+app.get('/students-list/:id',authenticateToken,async(request,response)=>{
+  const {id}=request.params;
+  const query = `SELECT student.id, subjects.name,SUM(marks.marks) FROM students INNER JOIN marks ON marks.student_id=students.id INNER JOIN subjects ON subjects.id=marks.subject_id WHERE students.id=${id} GROUP BY students.id`;
+  const users = await db.get(query);
+  if (users) {
+    response.status(401);
+    response.send("No existing students");
+  } else {
+    response.status(200);
+    response.send({ users });
+  }
+})
 
 app.put(
   "/student-edit-details/:id",
