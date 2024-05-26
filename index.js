@@ -35,7 +35,7 @@ app.post("/admin-login", async (request, response) => {
   const query = "SELECT * FROM admin WHERE admin_name = ?";
   try {
     const user = await db.get(query, [admin_name]);
-    if (!user) {
+    if (user===undefined) {
       response.status(401).send("Invalid Admin");
       return;
     }
@@ -57,7 +57,7 @@ app.post("/admin-signup", async (request, response) => {
   const { admin_name, password } = request.body;
   const query = `SELECT * FROM admin WHERE admin_name='${admin_name}'`;
   const user = await db.get(query);
-  if (user === null) {
+  if (user === undefined) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userDetails = { admin_name };
     const token = jwt.sign(userDetails, "MY_TOKEN_ADMIN", { expiresIn: "1h" });
@@ -76,7 +76,7 @@ app.post("/student-login", async (request, response) => {
   const query = "SELECT * FROM students WHERE username = ?";
   try {
     const user = await db.get(query, [username]);
-    if (!user) {
+    if (user===undefined) {
       response.status(401).send("Invalid Student");
       return;
     }
@@ -100,7 +100,7 @@ app.post("/student-signup", async (request, response) => {
   const { username, password, enrollmentYear, fieldId } = request.body;
   const query = `SELECT * FROM students WHERE username='${username}'`;
   const user = await db.get(query);
-  if (user === null) {
+  if (user === undefined) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const token = jwt.sign({ username }, "MY_TOKEN_STUDENT", {
       expiresIn: "1h",
@@ -152,7 +152,7 @@ app.get('/students-list/:id',authenticateToken,async(request,response)=>{
   const {id}=request.params;
   const query = `SELECT student.id, subjects.name,SUM(marks.marks) FROM students INNER JOIN marks ON marks.student_id=students.id INNER JOIN subjects ON subjects.id=marks.subject_id WHERE students.id=${id} GROUP BY students.id`;
   const users = await db.get(query);
-  if (users) {
+  if (users===undefined) {
     response.status(401);
     response.send("No existing students");
   } else {
@@ -175,7 +175,7 @@ app.put(
     } = request.body;
     const query = `SELECT * FROM students WHERE id=${id}`;
     const user = await db.get(query);
-    if (user === null) {
+    if (user === undefined) {
       response.status(401);
       response.send("Student does not exists");
     } else {
@@ -212,7 +212,7 @@ app.delete(
     const { username } = request.body;
     const query = `SELECT * FROM students WHERE id=${id}`;
     const user = await db.get(query);
-    if (user === null) {
+    if (user === undefined) {
       response.status(401);
       response.send("Invalid Student");
     } else {
@@ -241,7 +241,7 @@ app.put("/fields/:id", authenticateToken, async (request, response) => {
   const { name = "" } = request.body;
   const query = `SELECT * FROM fields WHERE id=${id}`;
   const field = await db.get(query);
-  if (field === null) {
+  if (field === undefined) {
     response.status(401);
     response.send("Invalid Field");
   } else {
@@ -261,7 +261,7 @@ app.delete("/fields/:id", authenticateToken, async (request, response) => {
   const { id } = request.params;
   const query = `SELECT * FROM fields WHERE id=${id}`;
   const field = await db.get(query);
-  if (field === null) {
+  if (field === undefined) {
     response.status(401);
     response.send("Invalid Field");
   } else {
@@ -289,7 +289,7 @@ app.put("/subjects/:id", authenticateToken, async (request, response) => {
   const { name = "", fieldId = 0 } = request.body;
   const query = `SELECT * FROM subjects WHERE id=${id}`;
   const subject = await db.get(query);
-  if (subject === null) {
+  if (subject === undefined) {
     response.status(401);
     response.send("Invalid Subject");
   } else {
@@ -309,7 +309,7 @@ app.delete("/subjects/:id", authenticateToken, async (request, response) => {
   const { id } = request.params;
   const query = `SELECT * FROM subjects WHERE id=${id}`;
   const subject = await db.get(query);
-  if (subject === null) {
+  if (subject === undefined) {
     response.status(401);
     response.send("Invalid Subject");
   } else {
@@ -341,7 +341,7 @@ app.put(
     const { marks } = request.body;
     const query = `SELECT * FROM marks WHERE student_id=${stuid} AND subject_id=${subid}`;
     const mark = await db.get(query);
-    if (mark === null) {
+    if (mark === undefined) {
       response.status(401);
       response.send("Invalid Subject");
     } else {
@@ -360,7 +360,7 @@ app.delete(
     const { stuid, subid } = request.params;
     const query = `SELECT * FROM marks WHERE student_id=${stuid} AND subject_id=${subid}`;
     const mark = await db.get(query);
-    if (mark === null) {
+    if (mark === undefined) {
       response.status(401);
       response.send("Invalid Subject");
     } else {
