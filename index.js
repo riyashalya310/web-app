@@ -61,7 +61,7 @@ app.post("/admin-signup", async (request, response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userDetails = { admin_name };
     const token = jwt.sign(userDetails, "MY_TOKEN_ADMIN", { expiresIn: "1h" });
-    const query = `INSERT INTO admin(admin_name,password) VALUES(${admin_name},${hashedPassword})`;
+    const query = `INSERT INTO admin(admin_name,password) VALUES("${admin_name}","${hashedPassword}")`;
     await db.run(query);
     response.status(200);
     response.send({ msg: "Admin created successfully", jwtToken: token });
